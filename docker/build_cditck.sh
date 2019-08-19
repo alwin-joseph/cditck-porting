@@ -24,11 +24,60 @@ WGET_PROPS="--progress=bar:force --no-cache"
 wget $WGET_PROPS $GF_BUNDLE_URL -O ${WORKSPACE}/latest-glassfish.zip
 unzip -o ${WORKSPACE}/latest-glassfish.zip -d ${WORKSPACE}
 
+if [ -z "${CDI_TCK_VERSION}" ]; then
+  CDI_TCK_VERSION=2.0.6	
+fi
+
+if [ -z "${CDI_TCK_BUNDLE_URL}" ]; then
+  CDI_TCK_BUNDLE_URL=http://download.eclipse.org/ee4j/cdi/cdi-tck-${CDI_TCK_VERSION}-dist.zip	
+fi
+
+#Install CDI TCK dist
+echo "Download and unzip CDI TCK dist ..."
+wget --progress=bar:force --no-cache $CDI_TCK_BUNDLE_URL -O latest-cdi-tck-dist.zip
+unzip -o ${WORKSPACE}/latest-cdi-tck-dist.zip -d ${WORKSPACE}/
+
+
 which ant
 ant -version
 
 which mvn
 mvn -version
+
+GROUP_ID=org.jboss.cdi.tck 
+CDI_TCK_DIST=cdi-tck-2.0.6
+
+#cp ${WORKSPACE}/${CDI_TCK_DIST}/cdi-tck-2.0.6/artifacts/cdi-tck-impl-2.0.6-suite.xml \
+	#${WORKSPACE}/${CDI_TCK_DIST}/artifacts/cdi-tck-impl-2.0.6-suite.xml
+
+
+mvn install:install-file \
+-Dfile=${WORKSPACE}/${CDI_TCK_DIST}/artifacts/cdi-tck-api-${CDI_TCK_VERSION}.jar \
+-DgroupId=${GROUP_ID} \
+-DartifactId=cdi-tck-api \
+-Dversion=${CDI_TCK_VERSION} \
+-Dpackaging=jar
+
+mvn install:install-file \
+-Dfile=${WORKSPACE}/${CDI_TCK_DIST}/artifacts/cdi-tck-impl-${CDI_TCK_VERSION}.jar \
+-DgroupId=${GROUP_ID} \
+-DartifactId=cdi-tck-impl \
+-Dversion=${CDI_TCK_VERSION} \
+-Dpackaging=jar
+
+mvn install:install-file \
+-Dfile=${WORKSPACE}/${CDI_TCK_DIST}/artifacts/cdi-tck-ext-lib-${CDI_TCK_VERSION}.jar \
+-DgroupId=${GROUP_ID} \
+-DartifactId=cdi-tck-ext-lib \
+-Dversion=${CDI_TCK_VERSION} \
+-Dpackaging=jar
+
+mvn install:install-file \
+-Dfile=${WORKSPACE}/${CDI_TCK_DIST}/artifacts/cdi-tck-impl-${CDI_TCK_VERSION}-suite.xml \
+-DgroupId=${GROUP_ID} \
+-DartifactId=cdi-tck-impl \
+-Dversion=${CDI_TCK_VERSION} \
+-Dpackaging=xml
 
 
 sed -i "s#^porting\.home=.*#porting.home=$WORKSPACE#g" "$WORKSPACE/build.xml"

@@ -56,13 +56,20 @@ spec:
     choice(name: 'PROFILE', choices: 'FULL\nWEB', 
            description: 'Profile to be used for running CTS either web/full' )
 	string(name: 'TCK_BUNDLE_FILE_NAME', 
-           defaultValue: 'cdi-tck-glassfish-porting-2.0_latest.zip', 
+           defaultValue: 'cdi-tck-glassfish-porting-2.0.0.zip', 
 	   description: 'Name of bundle file to be appended to the base url' )
+	string(name: 'CDI_TCK_BUNDLE_URL', 
+             defaultValue: 'http://download.eclipse.org/ee4j/cdi/cdi-tck-2.0.6-dist.zip', 
+  	         description: 'CDI TCK bundle url' )
+    string(name: 'CDI_TCK_VERSION', 
+             defaultValue: '2.0.6', 
+             description: 'version of bundle file' )
   }
   environment {
     ANT_HOME = "/usr/share/ant"
     MAVEN_HOME = "/usr/share/maven"
-    ANT_OPTS = "-Djavax.xml.accessExternalStylesheet=all -Djavax.xml.accessExternalSchema=all -Djavax.xml.accessExternalDTD=file,http" 
+    ANT_OPTS = "-Djavax.xml.accessExternalStylesheet=all -Djavax.xml.accessExternalSchema=all -Djavax.xml.accessExternalDTD=file,http -Duser.home=$HOME"
+	MAVEN_OPTS="-Duser.home=$HOME"
   }
   stages {
     stage('cdi-tck-build') {
